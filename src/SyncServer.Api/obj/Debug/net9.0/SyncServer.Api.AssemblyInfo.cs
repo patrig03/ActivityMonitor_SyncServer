@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SyncServer.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29dc1b92a79f10d914df2e1d15ab75e796d24977")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b576acf69ec826b59f6626529175b5e95ee2e6b8")]
 [assembly: System.Reflection.AssemblyProductAttribute("SyncServer.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SyncServer.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
