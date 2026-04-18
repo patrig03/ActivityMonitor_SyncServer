@@ -1,0 +1,150 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Infrastructure/SyncServer.Infrastructure.csproj": {}
+  },
+  "projects": {
+    "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Core/SyncServer.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Core/SyncServer.Core.csproj",
+        "projectName": "SyncServer.Core",
+        "projectPath": "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Core/SyncServer.Core.csproj",
+        "packagesPath": "/home/patri/.nuget/packages/",
+        "outputPath": "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Core/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/patri/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/usr/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.104/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Infrastructure/SyncServer.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Infrastructure/SyncServer.Infrastructure.csproj",
+        "projectName": "SyncServer.Infrastructure",
+        "projectPath": "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Infrastructure/SyncServer.Infrastructure.csproj",
+        "packagesPath": "/home/patri/.nuget/packages/",
+        "outputPath": "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/patri/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/usr/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Core/SyncServer.Core.csproj": {
+                "projectPath": "/home/patri/Projects/ActivityMonitor_SyncServer/src/SyncServer.Core/SyncServer.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.104/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
