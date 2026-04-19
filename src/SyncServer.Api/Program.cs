@@ -27,6 +27,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<SyncValidationService>();
 builder.Services.AddScoped<ISyncService, SyncService>();
 
 builder.Services.AddControllers();
