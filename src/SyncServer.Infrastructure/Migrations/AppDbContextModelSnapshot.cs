@@ -31,6 +31,9 @@ namespace SyncServer.Infrastructure.Migrations
                     b.Property<Guid>("ApplicationId")
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -70,14 +73,31 @@ namespace SyncServer.Infrastructure.Migrations
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("ClassName")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int?>("Height")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("PositionX")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PositionY")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProcessName")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -86,6 +106,16 @@ namespace SyncServer.Infrastructure.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
+
+                    b.Property<int?>("Width")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WindowId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WindowTitle")
+                        .HasMaxLength(1024)
+                        .HasColumnType("varchar(1024)");
 
                     b.HasKey("Id");
 
@@ -105,6 +135,10 @@ namespace SyncServer.Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2048)
+                        .HasColumnType("varchar(2048)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -198,6 +232,9 @@ namespace SyncServer.Infrastructure.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<Guid?>("ApplicationId")
+                        .HasColumnType("char(36)");
+
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("char(36)");
 
@@ -207,7 +244,20 @@ namespace SyncServer.Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("DurationType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
                     b.Property<string>("InterventionType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("SessionLimitSec")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TargetType")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");

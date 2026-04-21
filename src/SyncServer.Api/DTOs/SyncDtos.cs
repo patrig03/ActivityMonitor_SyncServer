@@ -50,19 +50,25 @@ public class ActivityDto
     public Guid Id { get; set; }
     public Guid DeviceId { get; set; }
     public Guid ApplicationId { get; set; }
+    public Guid? CategoryId { get; set; }
     public string? Url { get; set; }
+    public DateTime CreatedAt { get; set; }
     public DateTime Timestamp { get; set; }
     public int Duration { get; set; }
-    public DateTime CreatedAt { get; set; }
 }
 
 public class ThresholdDto
 {
     public Guid Id { get; set; }
     public Guid? CategoryId { get; set; }
-    public int DailyLimitSec { get; set; }
-    public string InterventionType { get; set; } = string.Empty;
+    public Guid? ApplicationId { get; set; }
     public bool Active { get; set; }
+    public string TargetType { get; set; } = "Category";
+    public string InterventionType { get; set; } = string.Empty;
+    public string DurationType { get; set; } = "Daily";
+    public int SessionLimitSec { get; set; }
+    public int DailyLimitSec { get; set; }
+    public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 }
@@ -70,8 +76,8 @@ public class ThresholdDto
 public class UserSettingDto
 {
     public Guid Id { get; set; }
-    public string Key { get; set; } = string.Empty;
-    public string Value { get; set; } = string.Empty;
+    public Guid DeviceId { get; set; }
+    public int DeltaTimeSeconds { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
 
@@ -79,6 +85,7 @@ public class CategoryDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
@@ -87,8 +94,16 @@ public class CategoryDto
 public class ApplicationDto
 {
     public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+    public string? Name { get; set; }
     public Guid? CategoryId { get; set; }
+    public string? WindowTitle { get; set; }
+    public string? ClassName { get; set; }
+    public string? ProcessName { get; set; }
+    public int? PositionX { get; set; }
+    public int? PositionY { get; set; }
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    public int? WindowId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }

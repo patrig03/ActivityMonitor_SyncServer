@@ -9,6 +9,11 @@ public class SyncValidationService
     {
         var errors = new List<string>();
 
+        if (request.DeviceId == Guid.Empty)
+        {
+            errors.Add("Sync request: DeviceId is required");
+        }
+
         foreach (var session in request.Sessions)
         {
             var sessionErrors = ValidateSession(userId, session);
@@ -99,6 +104,21 @@ public class SyncValidationService
         if (threshold.DailyLimitSec < 0)
             errors.Add($"Threshold {threshold.Id}: DailyLimitSec must be >= 0");
 
+        if (threshold.SessionLimitSec < 0)
+            errors.Add($"Threshold {threshold.Id}: SessionLimitSec must be >= 0");
+
+        if (string.IsNullOrWhiteSpace(threshold.TargetType))
+            errors.Add($"Threshold {threshold.Id}: TargetType is required");
+
+        if (threshold.TargetType?.Length > 50)
+            errors.Add($"Threshold {threshold.Id}: TargetType exceeds maximum length of 50");
+
+        if (string.IsNullOrWhiteSpace(threshold.DurationType))
+            errors.Add($"Threshold {threshold.Id}: DurationType is required");
+
+        if (threshold.DurationType?.Length > 50)
+            errors.Add($"Threshold {threshold.Id}: DurationType exceeds maximum length of 50");
+
         if (string.IsNullOrWhiteSpace(threshold.InterventionType))
             errors.Add($"Threshold {threshold.Id}: InterventionType is required");
 
@@ -134,6 +154,9 @@ public class SyncValidationService
         if (category.Name?.Length > 255)
             errors.Add($"Category {category.Id}: Name exceeds maximum length of 255");
 
+        if (category.Description?.Length > 2048)
+            errors.Add($"Category {category.Id}: Description exceeds maximum length of 2048");
+
         return errors;
     }
 
@@ -146,6 +169,15 @@ public class SyncValidationService
 
         if (app.Name?.Length > 255)
             errors.Add($"Application {app.Id}: Name exceeds maximum length of 255");
+
+        if (app.WindowTitle?.Length > 1024)
+            errors.Add($"Application {app.Id}: WindowTitle exceeds maximum length of 1024");
+
+        if (app.ClassName?.Length > 255)
+            errors.Add($"Application {app.Id}: ClassName exceeds maximum length of 255");
+
+        if (app.ProcessName?.Length > 255)
+            errors.Add($"Application {app.Id}: ProcessName exceeds maximum length of 255");
 
         return errors;
     }

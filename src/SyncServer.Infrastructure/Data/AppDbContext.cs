@@ -40,6 +40,9 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.UserId);
             entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.WindowTitle).HasMaxLength(1024);
+            entity.Property(e => e.ClassName).HasMaxLength(255);
+            entity.Property(e => e.ProcessName).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Session>(entity =>
@@ -63,6 +66,8 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.UserId);
+            entity.Property(e => e.TargetType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.DurationType).HasMaxLength(50).IsRequired();
             entity.Property(e => e.InterventionType).HasMaxLength(50).IsRequired();
         });
 
@@ -80,6 +85,7 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.UserId);
             entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(2048);
         });
     }
 }
