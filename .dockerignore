@@ -1,0 +1,11 @@
+.git
+.idea
+bin
+obj
+*.user
+*.userosscache
+.vs
+Dockerfile*
+docker-compose*.yml
+.env
+.env.example
