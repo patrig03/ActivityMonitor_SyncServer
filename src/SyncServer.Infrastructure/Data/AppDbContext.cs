@@ -33,6 +33,9 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.UserId);
             entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Platform).HasMaxLength(100);
+            entity.Property(e => e.Version).HasMaxLength(100);
+            entity.Property(e => e.Status).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Application>(entity =>

@@ -30,6 +30,10 @@ public class DevicesController : ControllerBase
             {
                 Id = d.Id,
                 Name = d.Name,
+                Platform = d.Platform,
+                Version = d.Version,
+                Status = d.Status,
+                LastKnownActivity = d.LastKnownActivity,
                 LastSyncAt = d.LastSyncAt,
                 CreatedAt = d.CreatedAt
             }).ToList()

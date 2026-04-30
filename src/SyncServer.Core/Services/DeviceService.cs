@@ -24,6 +24,10 @@ public class DeviceService : IDeviceService
             Id = Guid.NewGuid(),
             UserId = userId,
             Name = name,
+            Platform = string.Empty,
+            Version = string.Empty,
+            Status = string.Empty,
+            LastKnownActivity = DateTime.UtcNow,
             LastSyncAt = DateTime.UtcNow,
             CreatedAt = DateTime.UtcNow
         };
