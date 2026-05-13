@@ -3,7 +3,7 @@ namespace SyncServer.Api.DTOs;
 public class SyncRequestDto
 {
     public DateTime LastSyncAt { get; set; }
-    public Guid DeviceId { get; set; }
+    public string DeviceId { get; set; } = string.Empty;
     public List<SessionDto> Sessions { get; set; } = new();
     public List<ActivityDto> Activities { get; set; } = new();
     public List<ThresholdDto> Thresholds { get; set; } = new();
@@ -36,9 +36,10 @@ public class SyncPullResponseDto
 
 public class SessionDto
 {
-    public Guid Id { get; set; }
-    public Guid DeviceId { get; set; }
-    public Guid ApplicationId { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string DeviceId { get; set; } = string.Empty;
+    public string ApplicationId { get; set; } = string.Empty;
+    public string? Name { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime? EndTime { get; set; }
     public int Duration { get; set; }
@@ -47,10 +48,10 @@ public class SessionDto
 
 public class ActivityDto
 {
-    public Guid Id { get; set; }
-    public Guid DeviceId { get; set; }
-    public Guid ApplicationId { get; set; }
-    public Guid? CategoryId { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string DeviceId { get; set; } = string.Empty;
+    public string ApplicationId { get; set; } = string.Empty;
+    public string? CategoryId { get; set; }
     public string? Url { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime Timestamp { get; set; }
@@ -59,9 +60,10 @@ public class ActivityDto
 
 public class ThresholdDto
 {
-    public Guid Id { get; set; }
-    public Guid? CategoryId { get; set; }
-    public Guid? ApplicationId { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string? DeviceId { get; set; }
+    public string? CategoryId { get; set; }
+    public string? ApplicationId { get; set; }
     public bool Active { get; set; }
     public string TargetType { get; set; } = "Category";
     public string InterventionType { get; set; } = string.Empty;
@@ -75,15 +77,15 @@ public class ThresholdDto
 
 public class UserSettingDto
 {
-    public Guid Id { get; set; }
-    public Guid DeviceId { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string DeviceId { get; set; } = string.Empty;
     public int DeltaTimeSeconds { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
 
 public class CategoryDto
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -93,9 +95,10 @@ public class CategoryDto
 
 public class ApplicationDto
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string? DeviceId { get; set; }
     public string? Name { get; set; }
-    public Guid? CategoryId { get; set; }
+    public string? CategoryId { get; set; }
     public string? WindowTitle { get; set; }
     public string? ClassName { get; set; }
     public string? ProcessName { get; set; }

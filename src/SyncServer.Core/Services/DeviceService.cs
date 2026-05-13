@@ -24,10 +24,12 @@ public class DeviceService : IDeviceService
             Id = Guid.NewGuid(),
             UserId = userId,
             Name = name,
+            DeviceType = "Desktop",
             Platform = string.Empty,
-            Version = string.Empty,
-            Status = string.Empty,
-            LastKnownActivity = DateTime.UtcNow,
+            Status = "Active",
+            IsTrusted = false,
+            IsCurrentDevice = false,
+            LastSeenAt = DateTime.UtcNow,
             LastSyncAt = DateTime.UtcNow,
             CreatedAt = DateTime.UtcNow
         };

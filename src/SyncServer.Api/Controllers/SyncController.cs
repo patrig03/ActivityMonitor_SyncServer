@@ -28,20 +28,20 @@ public class SyncController : ControllerBase
     public async Task<ActionResult<SyncResponseDto>> Sync([FromBody] SyncRequestDto request)
     {
         var userId = GetUserId();
-        if (request.DeviceId == Guid.Empty)
+        if (!Guid.TryParse(request.DeviceId, out var deviceGuid) || deviceGuid == Guid.Empty)
         {
             return BadRequest(new { message = "DeviceId is required" });
         }
 
-        var device = await _deviceService.GetByIdAsync(request.DeviceId);
+        var device = await _deviceService.GetByIdAsync(deviceGuid);
         if (device == null || device.UserId != userId)
         {
             return BadRequest(new { message = "DeviceId is not registered for the current user" });
         }
 
-        var syncRequest = ToSyncRequest(request);
-        var result = await _syncService.SyncAsync(userId, request.DeviceId, syncRequest);
-        await _deviceService.UpdateLastSyncAsync(request.DeviceId);
+        var syncRequest = ToSyncRequest(request, deviceGuid);
+        var result = await _syncService.SyncAsync(userId, deviceGuid, syncRequest);
+        await _deviceService.UpdateLastSyncAsync(deviceGuid);
 
         return Ok(ToSyncResponse(result));
     }
@@ -61,20 +61,20 @@ public class SyncController : ControllerBase
         return Guid.Parse(claim!);
     }
 
-    private static SyncRequest ToSyncRequest(SyncRequestDto dto)
+    private static SyncRequest ToSyncRequest(SyncRequestDto dto, Guid deviceGuid)
     {
         var syncTimestamp = DateTime.UtcNow;
 
         return new SyncRequest
         {
             LastSyncAt = NormalizeTimestamp(dto.LastSyncAt, DateTime.UnixEpoch),
-            DeviceId = dto.DeviceId,
+            DeviceId = deviceGuid,
             Sessions = dto.Sessions.Select(s => new Session 
             { 
-                Id = s.Id, 
+                Id = ParseGuidOrEmpty(s.Id), 
                 UserId = Guid.Empty,
-                DeviceId = s.DeviceId == Guid.Empty ? dto.DeviceId : s.DeviceId, 
-                ApplicationId = s.ApplicationId, 
+                DeviceId = ParseGuidOrEmpty(s.DeviceId) == Guid.Empty ? deviceGuid : ParseGuidOrEmpty(s.DeviceId), 
+                ApplicationId = ParseGuidOrEmpty(s.ApplicationId), 
                 StartTime = NormalizeTimestamp(s.StartTime, syncTimestamp), 
                 EndTime = s.EndTime.HasValue ? NormalizeTimestamp(s.EndTime.Value, syncTimestamp) : null, 
                 Duration = s.Duration, 
@@ -82,11 +82,11 @@ public class SyncController : ControllerBase
             }).ToList(),
             Activities = dto.Activities.Select(a => new Activity 
             { 
-                Id = a.Id, 
+                Id = ParseGuidOrEmpty(a.Id), 
                 UserId = Guid.Empty,
-                DeviceId = a.DeviceId == Guid.Empty ? dto.DeviceId : a.DeviceId, 
-                ApplicationId = a.ApplicationId, 
-                CategoryId = a.CategoryId,
+                DeviceId = ParseGuidOrEmpty(a.DeviceId) == Guid.Empty ? deviceGuid : ParseGuidOrEmpty(a.DeviceId), 
+                ApplicationId = ParseGuidOrEmpty(a.ApplicationId), 
+                CategoryId = ParseGuidOrEmpty(a.CategoryId),
                 Url = a.Url, 
                 Timestamp = NormalizeTimestamp(a.Timestamp, a.CreatedAt, syncTimestamp), 
                 Duration = Math.Max(0, a.Duration), 
@@ -94,10 +94,10 @@ public class SyncController : ControllerBase
             }).ToList(),
             Thresholds = dto.Thresholds.Select(t => new Threshold 
             { 
-                Id = t.Id, 
+                Id = ParseGuidOrEmpty(t.Id), 
                 UserId = Guid.Empty,
-                CategoryId = t.CategoryId, 
-                ApplicationId = t.ApplicationId,
+                CategoryId = ParseGuidOrEmpty(t.CategoryId), 
+                ApplicationId = ParseGuidOrEmpty(t.ApplicationId),
                 TargetType = string.IsNullOrWhiteSpace(t.TargetType) ? "Category" : t.TargetType.Trim(),
                 DailyLimitSec = t.DailyLimitSec, 
                 DurationType = string.IsNullOrWhiteSpace(t.DurationType) ? "Daily" : t.DurationType.Trim(),
@@ -107,10 +107,10 @@ public class SyncController : ControllerBase
                 UpdatedAt = NormalizeTimestamp(t.UpdatedAt, t.CreatedAt, syncTimestamp), 
                 DeletedAt = t.DeletedAt 
             }).ToList(),
-            Settings = dto.Settings.Select(s => ToUserSetting(s, dto.DeviceId, syncTimestamp)).ToList(),
+            Settings = dto.Settings.Select(s => ToUserSetting(s, deviceGuid, syncTimestamp)).ToList(),
             Categories = dto.Categories.Select(c => new Category 
             { 
-                Id = c.Id, 
+                Id = ParseGuidOrEmpty(c.Id), 
                 UserId = Guid.Empty,
                 Name = c.Name, 
                 Description = c.Description,
@@ -120,10 +120,10 @@ public class SyncController : ControllerBase
             }).ToList(),
             Applications = dto.Applications.Select(a => new Application 
             { 
-                Id = a.Id, 
+                Id = ParseGuidOrEmpty(a.Id), 
                 UserId = Guid.Empty,
                 Name = ResolveApplicationName(a), 
-                CategoryId = a.CategoryId, 
+                CategoryId = ParseGuidOrEmpty(a.CategoryId), 
                 WindowTitle = a.WindowTitle,
                 ClassName = a.ClassName,
                 ProcessName = a.ProcessName,
@@ -143,12 +143,12 @@ public class SyncController : ControllerBase
     {
         return new SyncResponseDto
         {
-            Sessions = result.Sessions.Select(s => new SessionDto { Id = s.Id, DeviceId = s.DeviceId, ApplicationId = s.ApplicationId, StartTime = s.StartTime, EndTime = s.EndTime, Duration = s.Duration, CreatedAt = s.CreatedAt }).ToList(),
-            Activities = result.Activities.Select(a => new ActivityDto { Id = a.Id, DeviceId = a.DeviceId, ApplicationId = a.ApplicationId, CategoryId = a.CategoryId, Url = a.Url, CreatedAt = a.CreatedAt, Timestamp = a.Timestamp, Duration = a.Duration }).ToList(),
-            Thresholds = result.Thresholds.Select(t => new ThresholdDto { Id = t.Id, CategoryId = t.CategoryId, ApplicationId = t.ApplicationId, Active = t.Active, TargetType = t.TargetType, InterventionType = t.InterventionType, DurationType = t.DurationType, SessionLimitSec = t.SessionLimitSec, DailyLimitSec = t.DailyLimitSec, CreatedAt = t.UpdatedAt, UpdatedAt = t.UpdatedAt, DeletedAt = t.DeletedAt }).ToList(),
+            Sessions = result.Sessions.Select(s => new SessionDto { Id = s.Id.ToString(), DeviceId = s.DeviceId.ToString(), ApplicationId = s.ApplicationId.ToString(), StartTime = s.StartTime, EndTime = s.EndTime, Duration = s.Duration, CreatedAt = s.CreatedAt }).ToList(),
+            Activities = result.Activities.Select(a => new ActivityDto { Id = a.Id.ToString(), DeviceId = a.DeviceId.ToString(), ApplicationId = a.ApplicationId.ToString(), CategoryId = a.CategoryId?.ToString(), Url = a.Url, CreatedAt = a.CreatedAt, Timestamp = a.Timestamp, Duration = a.Duration }).ToList(),
+            Thresholds = result.Thresholds.Select(t => new ThresholdDto { Id = t.Id.ToString(), CategoryId = t.CategoryId?.ToString(), ApplicationId = t.ApplicationId?.ToString(), Active = t.Active, TargetType = t.TargetType, InterventionType = t.InterventionType, DurationType = t.DurationType, SessionLimitSec = t.SessionLimitSec, DailyLimitSec = t.DailyLimitSec, CreatedAt = t.UpdatedAt, UpdatedAt = t.UpdatedAt, DeletedAt = t.DeletedAt }).ToList(),
             Settings = result.Settings.Select(ToUserSettingDto).Where(s => s != null).Select(s => s!).ToList(),
-            Categories = result.Categories.Select(c => new CategoryDto { Id = c.Id, Name = c.Name, Description = c.Description, CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt, DeletedAt = c.DeletedAt }).ToList(),
-            Applications = result.Applications.Select(a => new ApplicationDto { Id = a.Id, Name = a.Name, CategoryId = a.CategoryId, WindowTitle = a.WindowTitle, ClassName = a.ClassName, ProcessName = a.ProcessName, PositionX = a.PositionX, PositionY = a.PositionY, Width = a.Width, Height = a.Height, WindowId = a.WindowId, CreatedAt = a.CreatedAt, UpdatedAt = a.UpdatedAt, DeletedAt = a.DeletedAt }).ToList(),
+            Categories = result.Categories.Select(c => new CategoryDto { Id = c.Id.ToString(), Name = c.Name, Description = c.Description, CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt, DeletedAt = c.DeletedAt }).ToList(),
+            Applications = result.Applications.Select(a => new ApplicationDto { Id = a.Id.ToString(), Name = a.Name, CategoryId = a.CategoryId?.ToString(), WindowTitle = a.WindowTitle, ClassName = a.ClassName, ProcessName = a.ProcessName, PositionX = a.PositionX, PositionY = a.PositionY, Width = a.Width, Height = a.Height, WindowId = a.WindowId, CreatedAt = a.CreatedAt, UpdatedAt = a.UpdatedAt, DeletedAt = a.DeletedAt }).ToList(),
             ServerTime = result.ServerTime
         };
     }
@@ -157,22 +157,24 @@ public class SyncController : ControllerBase
     {
         return new SyncPullResponseDto
         {
-            Sessions = result.Sessions.Select(s => new SessionDto { Id = s.Id, DeviceId = s.DeviceId, ApplicationId = s.ApplicationId, StartTime = s.StartTime, EndTime = s.EndTime, Duration = s.Duration, CreatedAt = s.CreatedAt }).ToList(),
-            Activities = result.Activities.Select(a => new ActivityDto { Id = a.Id, DeviceId = a.DeviceId, ApplicationId = a.ApplicationId, CategoryId = a.CategoryId, Url = a.Url, CreatedAt = a.CreatedAt, Timestamp = a.Timestamp, Duration = a.Duration }).ToList(),
-            Thresholds = result.Thresholds.Select(t => new ThresholdDto { Id = t.Id, CategoryId = t.CategoryId, ApplicationId = t.ApplicationId, Active = t.Active, TargetType = t.TargetType, InterventionType = t.InterventionType, DurationType = t.DurationType, SessionLimitSec = t.SessionLimitSec, DailyLimitSec = t.DailyLimitSec, CreatedAt = t.UpdatedAt, UpdatedAt = t.UpdatedAt, DeletedAt = t.DeletedAt }).ToList(),
+            Sessions = result.Sessions.Select(s => new SessionDto { Id = s.Id.ToString(), DeviceId = s.DeviceId.ToString(), ApplicationId = s.ApplicationId.ToString(), StartTime = s.StartTime, EndTime = s.EndTime, Duration = s.Duration, CreatedAt = s.CreatedAt }).ToList(),
+            Activities = result.Activities.Select(a => new ActivityDto { Id = a.Id.ToString(), DeviceId = a.DeviceId.ToString(), ApplicationId = a.ApplicationId.ToString(), CategoryId = a.CategoryId?.ToString(), Url = a.Url, CreatedAt = a.CreatedAt, Timestamp = a.Timestamp, Duration = a.Duration }).ToList(),
+            Thresholds = result.Thresholds.Select(t => new ThresholdDto { Id = t.Id.ToString(), CategoryId = t.CategoryId?.ToString(), ApplicationId = t.ApplicationId?.ToString(), Active = t.Active, TargetType = t.TargetType, InterventionType = t.InterventionType, DurationType = t.DurationType, SessionLimitSec = t.SessionLimitSec, DailyLimitSec = t.DailyLimitSec, CreatedAt = t.UpdatedAt, UpdatedAt = t.UpdatedAt, DeletedAt = t.DeletedAt }).ToList(),
             Settings = result.Settings.Select(ToUserSettingDto).Where(s => s != null).Select(s => s!).ToList(),
-            Categories = result.Categories.Select(c => new CategoryDto { Id = c.Id, Name = c.Name, Description = c.Description, CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt, DeletedAt = c.DeletedAt }).ToList(),
-            Applications = result.Applications.Select(a => new ApplicationDto { Id = a.Id, Name = a.Name, CategoryId = a.CategoryId, WindowTitle = a.WindowTitle, ClassName = a.ClassName, ProcessName = a.ProcessName, PositionX = a.PositionX, PositionY = a.PositionY, Width = a.Width, Height = a.Height, WindowId = a.WindowId, CreatedAt = a.CreatedAt, UpdatedAt = a.UpdatedAt, DeletedAt = a.DeletedAt }).ToList(),
+            Categories = result.Categories.Select(c => new CategoryDto { Id = c.Id.ToString(), Name = c.Name, Description = c.Description, CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt, DeletedAt = c.DeletedAt }).ToList(),
+            Applications = result.Applications.Select(a => new ApplicationDto { Id = a.Id.ToString(), Name = a.Name, CategoryId = a.CategoryId?.ToString(), WindowTitle = a.WindowTitle, ClassName = a.ClassName, ProcessName = a.ProcessName, PositionX = a.PositionX, PositionY = a.PositionY, Width = a.Width, Height = a.Height, WindowId = a.WindowId, CreatedAt = a.CreatedAt, UpdatedAt = a.UpdatedAt, DeletedAt = a.DeletedAt }).ToList(),
             ServerTime = result.ServerTime
         };
     }
 
     private static UserSetting ToUserSetting(UserSettingDto dto, Guid fallbackDeviceId, DateTime syncTimestamp)
     {
-        var deviceId = dto.DeviceId == Guid.Empty ? fallbackDeviceId : dto.DeviceId;
+        var dtoDeviceId = ParseGuidOrEmpty(dto.DeviceId);
+        var deviceId = dtoDeviceId == Guid.Empty ? fallbackDeviceId : dtoDeviceId;
+        var dtoId = ParseGuidOrEmpty(dto.Id);
         return new UserSetting
         {
-            Id = deviceId == Guid.Empty ? dto.Id : deviceId,
+            Id = dtoId == Guid.Empty ? deviceId : dtoId,
             UserId = Guid.Empty,
             Key = BuildDeltaTimeKey(deviceId),
             Value = dto.DeltaTimeSeconds.ToString(CultureInfo.InvariantCulture),
@@ -189,8 +191,8 @@ public class SyncController : ControllerBase
 
         return new UserSettingDto
         {
-            Id = setting.Id,
-            DeviceId = deviceId,
+            Id = setting.Id.ToString(),
+            DeviceId = deviceId.ToString(),
             DeltaTimeSeconds = deltaTimeSeconds,
             UpdatedAt = setting.UpdatedAt
         };
@@ -229,6 +231,11 @@ public class SyncController : ControllerBase
     private static string? FirstNonEmpty(params string?[] values)
     {
         return values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value))?.Trim();
+    }
+
+    private static Guid ParseGuidOrEmpty(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) || !Guid.TryParse(value, out var result) ? Guid.Empty : result;
     }
 
     private static DateTime NormalizeTimestamp(DateTime candidate, DateTime fallback)

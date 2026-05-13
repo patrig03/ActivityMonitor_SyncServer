@@ -30,12 +30,17 @@ public class DevicesController : ControllerBase
             {
                 Id = d.Id,
                 Name = d.Name,
+                DeviceType = d.DeviceType,
                 Platform = d.Platform,
-                Version = d.Version,
+                Fingerprint = d.Fingerprint,
+                AppVersion = d.AppVersion,
                 Status = d.Status,
-                LastKnownActivity = d.LastKnownActivity,
+                IsTrusted = d.IsTrusted,
+                IsCurrentDevice = d.IsCurrentDevice,
+                CreatedAt = d.CreatedAt,
+                LastSeenAt = d.LastSeenAt,
                 LastSyncAt = d.LastSyncAt,
-                CreatedAt = d.CreatedAt
+                RevokedAt = d.RevokedAt
             }).ToList()
         });
     }
@@ -50,8 +55,15 @@ public class DevicesController : ControllerBase
         {
             Id = device.Id,
             Name = device.Name,
+            DeviceType = device.DeviceType,
+            Platform = device.Platform,
+            Status = device.Status,
+            IsTrusted = device.IsTrusted,
+            IsCurrentDevice = device.IsCurrentDevice,
+            CreatedAt = device.CreatedAt,
+            LastSeenAt = device.LastSeenAt,
             LastSyncAt = device.LastSyncAt,
-            CreatedAt = device.CreatedAt
+            RevokedAt = device.RevokedAt
         });
     }
 
